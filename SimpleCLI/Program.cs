@@ -10,7 +10,7 @@ namespace SimpleCLI
         static void Main(string[] args)
         {
             var services = new ServiceCollection();
-            services.AddScoped<MaCLI>();
+            ConfigureServices(services);
             var serviceProvider = services.BuildServiceProvider();
             Configure(serviceProvider);
 
