@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SimpleCLI": {
+      "commandName": "Project",
+      "commandLineArgs": "greetings 1 --full"
+    }
+  }
+}

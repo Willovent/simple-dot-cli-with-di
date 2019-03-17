@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
+using Microsoft.Extensions.DependencyInjection;
+using SimpleCLI.ConfigExtensions;
 using System;
 
 namespace SimpleCLI
@@ -7,34 +9,12 @@ namespace SimpleCLI
     {
         static void Main(string[] args)
         {
-            var app = new CommandLineApplication();
+            var services = new ServiceCollection();
+            services.AddScoped<MaCLI>();
+            var serviceProvider = services.BuildServiceProvider();
+            Configure(serviceProvider);
 
-            app.HelpOption("-?|-h|--help");
-            app.VersionOption("--version", "1.0.0");
-
-            app.Command("greetings", command =>
-            {
-
-                command.Description = "Greet someone";
-                command.HelpOption("-?|-h|--help"); 
-
-                var nameArg = command.Argument("[name]", "The name to greet");
-                var fullOption = command.Option("-f|--full", "full greeting flag", CommandOptionType.NoValue);
-
-                command.OnExecute(() =>
-                {
-                    var name = nameArg.Value;
-                    var fullGreeting = fullOption.HasValue();
-                    Console.WriteLine($"Hello {name}." + (fullGreeting ? " Hope you're fine !" : ""));
-                    return 0;
-                });
-            });
-
-            app.OnExecute(() =>
-            {
-                app.ShowHelp();
-                return 0;
-            });
+            var app = serviceProvider.GetRequiredService<MaCLI>();
             try
             {
                 app.Execute(args);
@@ -44,6 +24,17 @@ namespace SimpleCLI
                 Console.WriteLine(ex.Message);
                 app.ShowHelp();
             }
+        }
+        
+        static void ConfigureServices(IServiceCollection services)
+        {
+            services.ConfigureData();
+            services.AddScoped<MaCLI>();
+        }
+
+        static void Configure(ServiceProvider serviceProvider)
+        {
+            serviceProvider.FeedData();
         }
     }
 }
